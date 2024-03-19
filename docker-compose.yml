@@ -74,8 +74,8 @@ services:
             MYSQL_USER: mysql
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
-        ports:
-            - "3306:3306"
+#        ports:
+#            - "3306:3306"
         volumes:
             - ./sql:/docker-entrypoint-initdb.d
         networks:
