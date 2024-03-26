@@ -25,7 +25,11 @@
 
 
                                         <li class="nav-item border rounded mb-1">
-                                            <a class="nav-link active" id="paypal-tab" data-toggle="tab" href="#paypalTab" role="tab" aria-controls="paypalTab" aria-selected="true">{{__('admin.Paypal')}}</a>
+                                            <a class="nav-link active" id="sasapay-tab" data-toggle="tab" href="#sasapayTab" role="tab" aria-controls="sasapayTab" aria-selected="true">{{__('Sasapay')}}</a>
+                                        </li>
+
+                                        <li class="nav-item border rounded mb-1">
+                                            <a class="nav-link" id="paypal-tab" data-toggle="tab" href="#paypalTab" role="tab" aria-controls="paypalTab" aria-selected="true">{{__('admin.Paypal')}}</a>
                                         </li>
 
                                         <li class="nav-item border rounded mb-1">
@@ -35,7 +39,6 @@
                                         <li class="nav-item border rounded mb-1">
                                             <a class="nav-link" id="myfatoorah-tab" data-toggle="tab" href="#myfatoorahTab" role="tab" aria-controls="myfatoorahTab" aria-selected="true">{{__('admin.Myfatoorah')}}</a>
                                         </li>
-
 
 
                                         <li class="nav-item border rounded mb-1">
@@ -80,8 +83,101 @@
                                 <div class="col-12 col-sm-12 col-md-9">
                                     <div class="border rounded">
                                         <div class="tab-content no-padding" id="settingsContent">
+                                            <!-- SasapayPayment tab pane -->
+                                            <div class="tab-pane fade show active" id="sasapayTab" role="tabpanel" aria-labelledby="sasapay-tab">
+                                                <div class="card m-0">
+                                                    <div class="card-body">
+                                                        <form action="{{ route('admin.update-sasapay') }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="form-group">
+                                                                <label for="">{{ __('admin.SasapayPayment Status') }}</label>
+                                                                <div>
+                                                                    @if ($sasapay->status == 1)
+                                                                        <input id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="{{ __('admin.Enable') }}" data-off="{{ __('admin.Disable') }}" data-onstyle="success" data-offstyle="danger" name="status">
+                                                                    @else
+                                                                        <input id="status_toggle" type="checkbox" data-toggle="toggle" data-on="{{ __('admin.Enable') }}" data-off="{{ __('admin.Disable') }}" data-onstyle="success" data-offstyle="danger" name="status">
+                                                                    @endif
+                                                                </div>
+                                                            </div>
 
-                                            <div class="tab-pane fade show active" id="paypalTab" role="tabpanel" aria-labelledby="paypal-tab">
+                                                            <div class="form-group">
+                                                                <label for="">{{ __('admin.Merchant Code') }}</label>
+                                                                <input type="text" class="form-control" name="merchant_code" value="{{ $sasapay->merchant_code }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="client_id">{{ __('admin.Client ID') }}</label>
+                                                                <input type="text" class="form-control" name="client_id" value="{{ $sasapay->client_id }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="client_secret">{{ __('admin.Client Secret') }}</label>
+                                                                <input type="text" class="form-control" name="client_secret" value="{{ $sasapay->client_secret }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="mpesa_enabled">{{ __('admin.MPesa Enabled') }}</label>
+                                                                <input type="checkbox" class="form-control" name="mpesa_enabled" {{ $sasapay->mpesa_enabled == 1 ? 'checked' : '' }}>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="card_enabled">{{ __('admin.Card Enabled') }}</label>
+                                                                <input type="checkbox" class="form-control" name="card_enabled" {{ $sasapay->card_enabled == 1 ? 'checked' : '' }}>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="airtel_enabled">{{ __('admin.Airtel Enabled') }}</label>
+                                                                <input type="checkbox" class="form-control" name="airtel_enabled" {{ $sasapay->airtel_enabled == 1 ? 'checked' : '' }}>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="">{{__('admin.Current Image')}}</label>
+                                                                <div>
+                                                                    <img src="{{ asset($sasapay->logo) }}" width="200px" alt="">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="">{{__('admin.New Image')}}</label>
+                                                                <input type="file" class="form-control-file" name="image">
+                                                            </div>
+
+
+                                                            <div class="form-group">
+                                                                <label for="success_url">{{ __('admin.Success URL') }}</label>
+                                                                <input type="text" class="form-control" name="success_url" value="{{ $sasapay->success_url }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="failure_url">{{ __('admin.Failure URL') }}</label>
+                                                                <input type="text" class="form-control" name="failure_url" value="{{ $sasapay->failure_url }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="callback_url">{{ __('admin.Callback URL') }}</label>
+                                                                <input type="text" class="form-control" name="callback_url" value="{{ $sasapay->callback_url }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="currency_name">{{ __('admin.Currency') }}</label>
+                                                                <select name="currency_name" id="currency_name" class="form-control">
+                                                                    <option value="">{{ __('admin.Select Currency') }}</option>
+                                                                    @foreach ($currencies as $currency)
+                                                                        <option {{ $sasapay->currency_id == $currency->id ? 'selected' : '' }} value="{{ $currency->id }}">{{ $currency->currency_name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+
+                                                            <button class="btn btn-primary">{{ __('admin.Update') }}</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End of SasapayPayment tab pane -->
+
+
+                                            <div class="tab-pane fade" id="paypalTab" role="tabpanel" aria-labelledby="paypal-tab">
                                                 <div class="card m-0">
                                                     <div class="card-body">
                                                         <form action="{{ route('admin.update-paypal') }}" method="POST">
@@ -620,6 +716,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
         </section>
       </div>

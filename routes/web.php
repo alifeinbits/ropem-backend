@@ -650,6 +650,7 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::post('city-import',[CityController::class,'city_import'])->name('city-import');
 
     Route::get('payment-method',[PaymentMethodController::class,'index'])->name('payment-method');
+    Route::put('update-sasapay',[PaymentMethodController::class,'updateSasapay'])->name('update-sasapay');
     Route::put('update-paypal',[PaymentMethodController::class,'updatePaypal'])->name('update-paypal');
     Route::put('update-stripe',[PaymentMethodController::class,'updateStripe'])->name('update-stripe');
     Route::put('update-razorpay',[PaymentMethodController::class,'updateRazorpay'])->name('update-razorpay');

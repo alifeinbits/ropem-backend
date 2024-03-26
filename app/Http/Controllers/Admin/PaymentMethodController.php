@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SasapayPayment;
 use Illuminate\Http\Request;
 use App\Models\PaypalPayment;
 use App\Models\StripePayment;
@@ -31,15 +32,50 @@ class PaymentMethodController extends Controller
         $bank = BankPayment::first();
         $paystackAndMollie = PaystackAndMollie::first();
         $instamojo = InstamojoPayment::first();
+        $sasapay = SasapayPayment::first();
 
         $countires = CurrencyCountry::orderBy('name','asc')->get();
         $currencies = Currency::orderBy('name','asc')->get();
         $setting = Setting::first();
 
-        return response()->json(['paypal' => $paypal, 'stripe' => $stripe, 'razorpay' => $razorpay, 'flutterwave' => $flutterwave, 'bank' => $bank, 'paystackAndMollie' => $paystackAndMollie, 'instamojo' => $instamojo, 'countires' => $countires, 'currencies' => $currencies, 'setting' => $setting], 200);
+        return response()->json(['sasapay'=>$sasapay,'paypal' => $paypal, 'stripe' => $stripe, 'razorpay' => $razorpay, 'flutterwave' => $flutterwave, 'bank' => $bank, 'paystackAndMollie' => $paystackAndMollie, 'instamojo' => $instamojo, 'countires' => $countires, 'currencies' => $currencies, 'setting' => $setting], 200);
 
     }
 
+    public function updateSasapay(Request $request){
+
+
+        $rules = [
+            'merchant_code' => 'required',
+            'client_id' => 'required',
+            'client_secret' => 'required',
+            'country_name' => 'required',
+            'currency_name' => 'required',
+            'currency_rate' => 'required',
+        ];
+        $customMessages = [
+            'merchant_code.required' => trans('Sasapay merchant code is required'),
+            'client_id.required' => trans('Sasapay client id  is required'),
+            'client_secret.required' => trans('Sasapay client secret is required'),
+            'country_name.required' => trans('Country name is required'),
+            'currency_name.required' => trans('Currency name is required'),
+            'currency_rate.required' => trans('Currency rate is required'),
+        ];
+        $this->validate($request, $rules,$customMessages);
+
+        $sasapay = SasapayPayment::first();
+        $sasapay->merchant_code = $request->merchant_code;
+        $sasapay->client_id = $request->client_id;
+        $sasapay->client_secret = $request->client_secret;
+        $sasapay->country_code = $request->country_name;
+        $sasapay->currency_code = $request->currency_name;
+        $sasapay->currency_rate = $request->currency_rate;
+        $sasapay->status = $request->status ? 1 : 0;
+        $sasapay->save();
+
+        $notification=trans('Updated Successfully');
+        return response()->json(['notification' => $notification], 200);
+    }
     public function updatePaypal(Request $request){
 
         $rules = [

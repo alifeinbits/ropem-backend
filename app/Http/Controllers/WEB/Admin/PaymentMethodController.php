@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SasapayPayment;
 use Illuminate\Http\Request;
 use App\Models\PaypalPayment;
 use App\Models\StripePayment;
@@ -28,6 +29,7 @@ class PaymentMethodController extends Controller
     }
 
     public function index(){
+        $sasapay = SasapayPayment::first();
         $paypal = PaypalPayment::first();
         $stripe = StripePayment::first();
         $razorpay = RazorpayPayment::first();
@@ -44,7 +46,7 @@ class PaymentMethodController extends Controller
 
         $currencies = MultiCurrency::where('status',1)->orderBy('currency_name','asc')->get();
 
-        return view('admin.payment_method', compact('paypal','stripe','razorpay','bank','paystackAndMollie','flutterwave','instamojo','countires','currencies','setting','paymongo','sslcommerz','myfatoorah'));
+        return view('admin.payment_method', compact('sasapay','paypal','stripe','razorpay','bank','paystackAndMollie','flutterwave','instamojo','countires','currencies','setting','paymongo','sslcommerz','myfatoorah'));
 
     }
 
@@ -76,6 +78,71 @@ class PaymentMethodController extends Controller
         $notification=array('messege'=>$notification,'alert-type'=>'success');
         return redirect()->back()->with($notification);
     }
+    public function updateSasapay(Request $request){
+
+        $rules = [
+            'merchant_code' => 'required',
+            'client_id' => 'required',
+            'client_secret' => 'required',
+            'mpesa_enabled' => 'required',
+            'card_enabled' => 'required',
+            'airtel_enabled' => 'required',
+            'success_url' => 'required|url',
+            'failure_url' => 'required|url',
+            'callback_url' => 'required|url',
+            'currency_name' => 'required',
+        ];
+
+        $customMessages = [
+            'merchant_code.required' => trans('admin_validation.Merchant code is required'),
+            'client_id.required' => trans('admin_validation.Client ID is required'),
+            'client_secret.required' => trans('admin_validation.Client secret is required'),
+            'mpesa_enabled.required' => trans('admin_validation.MPesa enabled status is required'),
+            'card_enabled.required' => trans('admin_validation.Card enabled status is required'),
+            'airtel_enabled.required' => trans('admin_validation.Airtel enabled status is required'),
+            'success_url.required' => trans('admin_validation.Success URL is required'),
+            'success_url.url' => trans('admin_validation.Success URL must be a valid URL'),
+            'failure_url.required' => trans('admin_validation.Failure URL is required'),
+            'failure_url.url' => trans('admin_validation.Failure URL must be a valid URL'),
+            'callback_url.required' => trans('admin_validation.Callback URL is required'),
+            'callback_url.url' => trans('admin_validation.Callback URL must be a valid URL'),
+            'currency_name.required' => trans('admin_validation.Currency ID is required'),
+        ];
+
+        $this->validate($request, $rules, $customMessages);
+
+        $sasapay = SasapayPayment::first();
+        $sasapay->merchant_code = $request->merchant_code;
+        $sasapay->client_id = $request->client_id;
+        $sasapay->client_secret = $request->client_secret;
+        $sasapay->mpesa_enabled = $request->mpesa_enabled ? 1 : 0;
+        $sasapay->card_enabled = $request->card_enabled ? 1 : 0;
+        $sasapay->airtel_enabled = $request->airtel_enabled ? 1 : 0;
+        $sasapay->status = $request->status ? 1 : 0;
+        $sasapay->success_url = $request->success_url;
+        $sasapay->failure_url = $request->failure_url;
+        $sasapay->callback_url = $request->callback_url;
+        $sasapay->currency_id = $request->currency_name;
+
+
+        if($request->image){
+            $old_image=$sasapay->logo;
+            $image=$request->image;
+            $extention=$image->getClientOriginalExtension();
+            $image_name= 'sasapay-'.date('Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $image_name='uploads/website-images/'.$image_name;
+            Image::make($image)
+                ->save(public_path().'/'.$image_name);
+            $sasapay->logo=$image_name;
+            $sasapay->save();
+            if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
+        }
+
+        $notification = trans('admin_validation.Updated Successfully');
+        $notification = ['message' => $notification, 'alert-type' => 'success'];
+        return redirect()->back()->with($notification);
+    }
+
 
     public function updateStripe(Request $request){
 

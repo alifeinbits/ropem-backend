@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\SasapayPayment;
 use Illuminate\Http\Request;
 use App\Models\BreadcrumbImage;
 use Auth;
@@ -61,6 +62,7 @@ class CheckoutController extends Controller
 
 
         $stripePaymentInfo = StripePayment::first();
+        $sasaPayPaymentInfo = SasapayPayment::first();
         $razorpayPaymentInfo = RazorpayPayment::first();
         $flutterwavePaymentInfo = Flutterwave::first();
         $paypalPaymentInfo = PaypalPayment::first();
@@ -77,6 +79,7 @@ class CheckoutController extends Controller
             'addresses' => $addresses,
             'shippings' => $shippings,
             'couponOffer' => $couponOffer,
+            'sasaPayPaymentInfo' => $sasaPayPaymentInfo,
             'stripePaymentInfo' => $stripePaymentInfo,
             'razorpayPaymentInfo' => $razorpayPaymentInfo,
             'flutterwavePaymentInfo' => $flutterwavePaymentInfo,
