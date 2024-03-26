@@ -87,22 +87,22 @@
           </li>
 
 
-          <li class="{{ Route::is('admin.inventory') || Route::is('admin.stock-history') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.inventory') }}"><i class="fas fa-th-large"></i> <span>{{__('admin.Inventory')}}</span></a></li>
+{{--          <li class="{{ Route::is('admin.inventory') || Route::is('admin.stock-history') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.inventory') }}"><i class="fas fa-th-large"></i> <span>{{__('admin.Inventory')}}</span></a></li>--}}
 
-          <li class="nav-item dropdown {{ Route::is('admin.pos.index') || Route::is('admin.pos.bulk.order') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown">
-            <div class="icon">
-            <i class="fas fa-th-large"></i>
-            </div>
-            <span>{{__('admin.Pos')}}</span></a>
-            <ul class="dropdown-menu">
+{{--          <li class="nav-item dropdown {{ Route::is('admin.pos.index') || Route::is('admin.pos.bulk.order') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown">--}}
+{{--            <div class="icon">--}}
+{{--            <i class="fas fa-th-large"></i>--}}
+{{--            </div>--}}
+{{--            <span>{{__('admin.Pos')}}</span></a>--}}
+{{--            <ul class="dropdown-menu">--}}
 
-                <li class="{{ Route::is('admin.pos.index') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pos.index') }}">{{__('admin.Add New Order')}}</a></li>
+{{--                <li class="{{ Route::is('admin.pos.index') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pos.index') }}">{{__('admin.Add New Order')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.pos.bulk.order') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pos.bulk.order') }}">{{__('admin.Bulk Order Accept')}}</a></li>
-            </ul>
+{{--                <li class="{{ Route::is('admin.pos.bulk.order') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pos.bulk.order') }}">{{__('admin.Bulk Order Accept')}}</a></li>--}}
+{{--            </ul>--}}
 
-          </li>
+{{--          </li>--}}
           <li class="nav-item dropdown {{ Route::is('admin.country.*') || Route::is('admin.state.*') || Route::is('admin.city.*') || Route::is('admin.country-import-page') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">
             <a href="#" class="nav-link has-dropdown"><i class="fas fa-map-marker-alt"></i><span>{{__('admin.Locations')}}</span></a>
 
@@ -117,34 +117,34 @@
             </ul>
           </li>
 
-          <li class="nav-item dropdown {{ Route::is('admin.delivery-man.*') || Route::is('admin.balance-list') || Route::is('admin.delivery-man-withdraw-list') || Route::is('admin.delivery-man-review') || Route::is('admin.delivery-man-order-amount') || Route::is('admin.delivery-man-order-amount.create') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="fas fa-walking"></i><span>{{__('Delivery Man')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.delivery-man.*') || Route::is('admin.balance-list') || Route::is('admin.delivery-man-withdraw-list') || Route::is('admin.delivery-man-review') || Route::is('admin.delivery-man-order-amount') || Route::is('admin.delivery-man-order-amount.create') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="fas fa-walking"></i><span>{{__('Delivery Man')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
+{{--            <ul class="dropdown-menu">--}}
 
-                <li class="{{ Route::is('admin.delivery-man.create') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man.create') }}">{{__('Create Delivery Man')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man.create') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man.create') }}">{{__('Create Delivery Man')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.delivery-man.index') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man.index') }}">{{__('Delivery Man')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man.index') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man.index') }}">{{__('Delivery Man')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.delivery-man-order-amount') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-order-amount') }}">{{__('Receive Amount')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man-order-amount') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-order-amount') }}">{{__('Receive Amount')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.delivery-man-review') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-review') }}">{{__('Review')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man-review') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-review') }}">{{__('Review')}}</a></li>--}}
 
-            </ul>
-          </li>
+{{--            </ul>--}}
+{{--          </li>--}}
 
-          <li class="nav-item dropdown {{ Route::is('admin.delivery-man-withdraw-method.*') || Route::is('admin.delivery-man-withdraw') || Route::is('admin.show-delivery-man-withdraw') || Route::is('admin.pending-delivery-man-withdraw') || Route::is('admin.city.*') || Route::is('admin.country-import-page') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="far fa-newspaper"></i><span>{{__('Delivery Man Withdrow')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.delivery-man-withdraw-method.*') || Route::is('admin.delivery-man-withdraw') || Route::is('admin.show-delivery-man-withdraw') || Route::is('admin.pending-delivery-man-withdraw') || Route::is('admin.city.*') || Route::is('admin.country-import-page') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="far fa-newspaper"></i><span>{{__('Delivery Man Withdrow')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
+{{--            <ul class="dropdown-menu">--}}
 
-                <li class="{{ Route::is('admin.delivery-man-withdraw-method.index') || Route::is('admin.delivery-man-withdraw-method.create') || Route::is('admin.delivery-man-withdraw-method.edit') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-withdraw-method.index') }}">{{__('Withdrow Method')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man-withdraw-method.index') || Route::is('admin.delivery-man-withdraw-method.create') || Route::is('admin.delivery-man-withdraw-method.edit') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-withdraw-method.index') }}">{{__('Withdrow Method')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.delivery-man-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-withdraw') }}">{{__('Withdraw')}}</a></li>
+{{--                <li class="{{ Route::is('admin.delivery-man-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.delivery-man-withdraw') }}">{{__('Withdraw')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.pending-delivery-man-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pending-delivery-man-withdraw') }}">{{__('Pending Withdraw')}}</a></li>
-            </ul>
-          </li>
+{{--                <li class="{{ Route::is('admin.pending-delivery-man-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pending-delivery-man-withdraw') }}">{{__('Pending Withdraw')}}</a></li>--}}
+{{--            </ul>--}}
+{{--          </li>--}}
 
           <li class="nav-item dropdown {{ Route::is('admin.flash-sale') || Route::is('admin.currency.*') || Route::is('admin.shipping.*') || Route::is('admin.coupon.*') || Route::is('admin.payment-method') || Route::is('admin.flash-sale-product') || Route::is('admin.shipping-import-page') ? 'active' : '' }}">
             <a href="#" class="nav-link has-dropdown"><i class="fas fa-shopping-cart"></i><span>{{__('admin.Ecommerce')}}</span></a>
@@ -165,18 +165,18 @@
 
           <li class="{{ Route::is('admin.advertisement') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.advertisement') }}"><i class="fas fa-ad"></i> <span>{{__('admin.Advertisement')}}</span></a></li>
 
-          <li class="nav-item dropdown {{ Route::is('admin.withdraw-method.*') || Route::is('admin.seller-withdraw') || Route::is('admin.pending-seller-withdraw') || Route::is('admin.show-seller-withdraw')  ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="far fa-newspaper"></i><span>{{__('admin.Withdraw Payment')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.withdraw-method.*') || Route::is('admin.seller-withdraw') || Route::is('admin.pending-seller-withdraw') || Route::is('admin.show-seller-withdraw')  ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="far fa-newspaper"></i><span>{{__('admin.Withdraw Payment')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.withdraw-method.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.withdraw-method.index') }}">{{__('admin.Withdraw Method')}}</a></li>
+{{--            <ul class="dropdown-menu">--}}
+{{--                <li class="{{ Route::is('admin.withdraw-method.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.withdraw-method.index') }}">{{__('admin.Withdraw Method')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.seller-withdraw') || Route::is('admin.show-seller-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.seller-withdraw') }}">{{__('admin.Seller Withdraw')}}</a></li>
+{{--                <li class="{{ Route::is('admin.seller-withdraw') || Route::is('admin.show-seller-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.seller-withdraw') }}">{{__('admin.Seller Withdraw')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.pending-seller-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pending-seller-withdraw') }}">{{__('admin.Pending Seller Withdraw')}}</a></li>
+{{--                <li class="{{ Route::is('admin.pending-seller-withdraw') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pending-seller-withdraw') }}">{{__('admin.Pending Seller Withdraw')}}</a></li>--}}
 
-            </ul>
-          </li>
+{{--            </ul>--}}
+{{--          </li>--}}
 
           <li class="nav-item dropdown {{  Route::is('admin.customer-list') || Route::is('admin.customer-show') || Route::is('admin.pending-customer-list') || Route::is('admin.seller-list') || Route::is('admin.seller-show') || Route::is('admin.pending-seller-list') || Route::is('admin.seller-shop-detail') || Route::is('admin.seller-reviews') || Route::is('admin.show-seller-review-details') || Route::is('admin.send-email-to-seller') || Route::is('admin.email-history') || Route::is('admin.product-by-seller') || Route::is('admin.send-email-to-all-seller') || Route::is('admin.send-email-to-all-customer') ? 'active' : '' }}">
             <a href="#" class="nav-link has-dropdown"><i class="fas fa-user"></i><span>{{__('admin.Users')}}</span></a>
@@ -227,61 +227,61 @@
             </ul>
           </li>
 
-          <li class="nav-item dropdown {{ Route::is('admin.footer.*') || Route::is('admin.social-link.*') || Route::is('admin.footer-link.*') || Route::is('admin.second-col-footer-link') || Route::is('admin.third-col-footer-link') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="fas fa-th-large"></i><span>{{__('admin.Website Footer')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.footer.*') || Route::is('admin.social-link.*') || Route::is('admin.footer-link.*') || Route::is('admin.second-col-footer-link') || Route::is('admin.third-col-footer-link') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="fas fa-th-large"></i><span>{{__('admin.Website Footer')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.footer.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.footer.index') }}">{{__('admin.Footer')}}</a></li>
+{{--            <ul class="dropdown-menu">--}}
+{{--                <li class="{{ Route::is('admin.footer.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.footer.index') }}">{{__('admin.Footer')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.social-link.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.social-link.index') }}">{{__('admin.Social Link')}}</a></li>
+{{--                <li class="{{ Route::is('admin.social-link.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.social-link.index') }}">{{__('admin.Social Link')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.footer-link.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.footer-link.index') }}">{{__('admin.First Column Link')}}</a></li>
+{{--                <li class="{{ Route::is('admin.footer-link.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.footer-link.index') }}">{{__('admin.First Column Link')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.second-col-footer-link') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.second-col-footer-link') }}">{{__('admin.Second Column Link')}}</a></li>
+{{--                <li class="{{ Route::is('admin.second-col-footer-link') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.second-col-footer-link') }}">{{__('admin.Second Column Link')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.third-col-footer-link') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.third-col-footer-link') }}">{{__('admin.Third Column Link')}}</a></li>
+{{--                <li class="{{ Route::is('admin.third-col-footer-link') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.third-col-footer-link') }}">{{__('admin.Third Column Link')}}</a></li>--}}
 
-            </ul>
-          </li>
+{{--            </ul>--}}
+{{--          </li>--}}
 
 
 
-          <li class="nav-item dropdown {{ Route::is('admin.about-us.*') || Route::is('admin.custom-page.*') || Route::is('admin.terms-and-condition.*') || Route::is('admin.privacy-policy.*') || Route::is('admin.faq.*') || Route::is('admin.error-page.*') || Route::is('admin.contact-us.*') || Route::is('admin.login-page') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i><span>{{__('admin.Pages')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.about-us.*') || Route::is('admin.custom-page.*') || Route::is('admin.terms-and-condition.*') || Route::is('admin.privacy-policy.*') || Route::is('admin.faq.*') || Route::is('admin.error-page.*') || Route::is('admin.contact-us.*') || Route::is('admin.login-page') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="fas fa-columns"></i><span>{{__('admin.Pages')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.about-us.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.about-us.index') }}">{{__('admin.About Us')}}</a></li>
+{{--            <ul class="dropdown-menu">--}}
+{{--                <li class="{{ Route::is('admin.about-us.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.about-us.index') }}">{{__('admin.About Us')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.contact-us.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.contact-us.index') }}">{{__('admin.Contact Us')}}</a></li>
+{{--                <li class="{{ Route::is('admin.contact-us.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.contact-us.index') }}">{{__('admin.Contact Us')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.custom-page.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.custom-page.index') }}">{{__('admin.Custom Page')}}</a></li>
+{{--                <li class="{{ Route::is('admin.custom-page.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.custom-page.index') }}">{{__('admin.Custom Page')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.terms-and-condition.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.terms-and-condition.index') }}">{{__('admin.Terms And Conditions')}}</a></li>
+{{--                <li class="{{ Route::is('admin.terms-and-condition.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.terms-and-condition.index') }}">{{__('admin.Terms And Conditions')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.privacy-policy.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.privacy-policy.index') }}">{{__('admin.Privacy Policy')}}</a></li>
+{{--                <li class="{{ Route::is('admin.privacy-policy.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.privacy-policy.index') }}">{{__('admin.Privacy Policy')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.faq.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.faq.index') }}">{{__('admin.FAQ')}}</a></li>
+{{--                <li class="{{ Route::is('admin.faq.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.faq.index') }}">{{__('admin.FAQ')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.error-page.*') ? 'active' : '' }} d-none"><a class="nav-link" href="{{ route('admin.error-page.index') }}">{{__('admin.Error Page')}}</a></li>
+{{--                <li class="{{ Route::is('admin.error-page.*') ? 'active' : '' }} d-none"><a class="nav-link" href="{{ route('admin.error-page.index') }}">{{__('admin.Error Page')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.login-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.login-page') }}">{{__('admin.Login Page')}}</a></li>
+{{--                <li class="{{ Route::is('admin.login-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.login-page') }}">{{__('admin.Login Page')}}</a></li>--}}
 
-            </ul>
-          </li>
+{{--            </ul>--}}
+{{--          </li>--}}
 
-          <li class="nav-item dropdown {{ Route::is('admin.blog-category.*') || Route::is('admin.blog.*') || Route::is('admin.popular-blog.*') || Route::is('admin.blog-comment.*') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown"><i class="fas fa-th-large"></i><span>{{__('admin.Blogs')}}</span></a>
+{{--          <li class="nav-item dropdown {{ Route::is('admin.blog-category.*') || Route::is('admin.blog.*') || Route::is('admin.popular-blog.*') || Route::is('admin.blog-comment.*') ? 'active' : '' }}">--}}
+{{--            <a href="#" class="nav-link has-dropdown"><i class="fas fa-th-large"></i><span>{{__('admin.Blogs')}}</span></a>--}}
 
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.blog-category.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog-category.index') }}">{{__('admin.Categories')}}</a></li>
+{{--            <ul class="dropdown-menu">--}}
+{{--                <li class="{{ Route::is('admin.blog-category.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog-category.index') }}">{{__('admin.Categories')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.blog.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog.index') }}">{{__('admin.Blogs')}}</a></li>
+{{--                <li class="{{ Route::is('admin.blog.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog.index') }}">{{__('admin.Blogs')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.popular-blog.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.popular-blog.index') }}">{{__('admin.Popular Blogs')}}</a></li>
+{{--                <li class="{{ Route::is('admin.popular-blog.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.popular-blog.index') }}">{{__('admin.Popular Blogs')}}</a></li>--}}
 
-                <li class="{{ Route::is('admin.blog-comment.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog-comment.index') }}">{{__('admin.Comments')}}</a></li>
-            </ul>
-          </li>
+{{--                <li class="{{ Route::is('admin.blog-comment.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog-comment.index') }}">{{__('admin.Comments')}}</a></li>--}}
+{{--            </ul>--}}
+{{--          </li>--}}
 
           <li class="nav-item dropdown {{ Route::is('admin.email-configuration') || Route::is('admin.email-template') || Route::is('admin.edit-email-template') ? 'active' : '' }}">
             <a href="#" class="nav-link has-dropdown"><i class="fas fa-envelope"></i><span>{{__('admin.Email Configuration')}}</span></a>
@@ -326,7 +326,7 @@
               $logedInAdmin = Auth::guard('admin')->user();
           @endphp
           @if ($logedInAdmin->admin_type == 1)
-          <li  class="{{ Route::is('admin.clear-database') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.clear-database') }}"><i class="fas fa-trash"></i> <span>{{__('admin.Clear Database')}}</span></a></li>
+{{--          <li  class="{{ Route::is('admin.clear-database') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.clear-database') }}"><i class="fas fa-trash"></i> <span>{{__('admin.Clear Database')}}</span></a></li>--}}
           @endif
 
           <li class="{{ Route::is('admin.subscriber') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.subscriber') }}"><i class="fas fa-fire"></i> <span>{{__('admin.Subscribers')}}</span></a></li>
