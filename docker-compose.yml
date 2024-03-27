@@ -1,12 +1,18 @@
 version: "3.7"
 services:
     app:
-        image: felixmutua/hobby:latest
+        build:
+            args:
+                user: www-data
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: ropem_app
         container_name: ropem_app_container
         restart: unless-stopped
         working_dir: /var/www/
-#        volumes:
-#            - ./:/var/www
+        volumes:
+            - ./:/var/www
         environment:
             # Laravel environment variables
             APP_NAME: ${APP_NAME}
@@ -68,8 +74,8 @@ services:
             MYSQL_USER: mysql
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
-#        ports:
-#            - "3306:3306"
+        ports:
+            - "3306:3306"
         volumes:
             - ./sql:/docker-entrypoint-initdb.d
         networks:

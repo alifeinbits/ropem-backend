@@ -36,9 +36,5 @@ RUN mkdir -p /home/$user/.composer && \
 # Set working directory
 WORKDIR /var/www
 
-# Copy files from the host to the container
-COPY . /var/www
-
-RUN chmod -R 777 /var/www
 # Switch to non-root user
 USER $user
