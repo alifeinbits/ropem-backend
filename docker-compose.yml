@@ -1,13 +1,7 @@
 version: "3.7"
 services:
     app:
-        build:
-            args:
-                user: www-data
-                uid: 1000
-            context: ./
-            dockerfile: Dockerfile
-        image: ropem_app
+        image: felixmutua/hobby:latest
         container_name: ropem_app_container
         restart: unless-stopped
         working_dir: /var/www/
