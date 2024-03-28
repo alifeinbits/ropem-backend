@@ -711,14 +711,16 @@ class PaymentController extends Controller
 
         $user = Auth::guard('api')->user();
 
-        Session::put('frontend_success_url', $request->frontend_success_url);
-        Session::put('frontend_faild_url', $request->frontend_faild_url);
-        Session::put('request_from', $request->request_from);
-        Session::put('shipping_address_id', $request->shipping_address_id);
-        Session::put('billing_address_id', $request->billing_address_id);
-        Session::put('shipping_method_id', $request->shipping_method_id);
-        Session::put('coupon', $request->coupon);
-        Session::put('user', $user);
+        session([
+            'frontend_success_url' => $request->frontend_success_url,
+            'frontend_faild_url' => $request->frontend_faild_url,
+            'request_from' => $request->request_from,
+            'shipping_address_id' => $request->shipping_address_id,
+            'billing_address_id' => $request->billing_address_id,
+            'shipping_method_id' => $request->shipping_method_id,
+            'coupon' => $request->coupon,
+            'user' => $user,
+        ]);
 
         $total = $this->calculateCartTotal($user, $request->coupon, $request->shipping_method_id);
 
@@ -732,8 +734,8 @@ class PaymentController extends Controller
 
         $amount_real_currency = $total_price;
         $sasapayPayment = SasapayPayment::first();
-        $price = $amount_real_currency;
-        $price = round($price,2);
+        $price = (string) round($amount_real_currency, 2);
+
 
         $client_id = $sasapayPayment->client_id;
         $client_secret = $sasapayPayment->client_secret;
@@ -752,12 +754,13 @@ class PaymentController extends Controller
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,
-            array("Content-Type:application/json",
-                "Authorization: Bearer $access_token"));
-        $payload = Array(
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            "Authorization: Bearer $access_token"
+        ]);
+        $payload = [
             'MerchantCode' => $sasapayPayment->merchant_code,
-            'amount' => $price,
+            'Amount' => $price,
             'Reference' => uniqid(),
             'Currency' => 'KES',
             'SasaPayWalletEnabled' => false,
@@ -767,16 +770,26 @@ class PaymentController extends Controller
             'CardEnabled' => true,
             'FailureUrl' => route('user.checkout.sasapay-response'),
             'SuccessUrl' => route('user.checkout.sasapay-response'),
-            'CallbackUrl' => $sasapayPayment->callback_url,
+            'CallbackUrl' => route('user.checkout.sasapay-response'),
             'PayerEmail' => Auth::user()->email,
-        );
+        ];
+        error_log(print_r($payload, true));
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         $response = curl_exec($ch);
         curl_close($ch);
         $response = json_decode($response);
-        return redirect($response->CheckoutUrl);
+        if (isset($response->CheckoutUrl)) {
+            return redirect($response->CheckoutUrl);
+
+        }else{
+            $frontend_faild_url = Session::get('frontend_faild_url');
+            error_log(print_r($response, true));
+            return redirect($frontend_faild_url);
+
+        }
     }
+
 
     public function instamojoResponse(Request $request){
         $input = $request->all();
@@ -868,91 +881,36 @@ class PaymentController extends Controller
 
     }
     public function sasapayResponse(Request $request){
-        $input = $request->all();
 
-        $instamojoPayment = InstamojoPayment::first();
-        $environment = $instamojoPayment->account_mode;
-        $api_key = $instamojoPayment->api_key;
-        $auth_token = $instamojoPayment->auth_token;
-
-        if($environment == 'Sandbox') {
-            $url = 'https://test.instamojo.com/api/1.1/';
-        } else {
-            $url = 'https://www.instamojo.com/api/1.1/';
-        }
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url.'payments/'.$request->get('payment_id'));
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,
-            array("X-Api-Key:$api_key",
-                "X-Auth-Token:$auth_token"));
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        if ($err) {
-            $frontend_faild_url = Session::get('frontend_faild_url');
-            $request_from = Session::get('request_from');
-
-            if($request_from == 'react_web'){
-                return redirect($frontend_faild_url);
-            }else{
-                return redirect()->route('user.checkout.order-fail-url-for-mobile-app');
-            }
-        } else {
-            $data = json_decode($response);
-        }
-
-        if($data->success == true) {
-            if($data->payment->status == 'Credit') {
+        if($request->get('ResultCode') == '0') {
                 $user = Session::get('user');
                 $coupon = Session::get('coupon');
                 $shipping_address_id = Session::get('shipping_address_id');
                 $billing_address_id = Session::get('billing_address_id');
                 $shipping_method_id = Session::get('shipping_method_id');
-                $payment_id = $request->get('payment_id');
+                $payment_id = $request->get('MerchantRequestID');
 
                 $total = $this->calculateCartTotal($user, $coupon, $shipping_method_id);
 
                 $total_price = $total['total_price'];
                 $coupon_price = $total['coupon_price'];
                 $shipping_fee = $total['shipping_fee'];
-                $productWeight = $total['productWeight'];
                 $shipping = $total['shipping'];
 
                 $totalProduct = ShoppingCart::with('variants')->where('user_id', $user->id)->sum('qty');
 
-                $setting = Setting::first();
-
-                $amount_real_currency = $total_price;
-                $amount_usd = round($total_price / $setting->currency->currency_rate,2);
-                $currency_rate = $setting->currency->currency_rate;
-                $currency_icon = $setting->currency->currency_icon;
-                $currency_name = $setting->currency->currency_name;
-
                 $transaction_id = $payment_id;
-                $order_result = $this->orderStore($user, $total_price, $totalProduct, 'Instamojo', $transaction_id, 1, $shipping, $shipping_fee, $coupon_price, 0,$billing_address_id, $shipping_address_id);
-
-                $this->sendOrderSuccessMail($user, $total_price, 'Instamojo', 1, $order_result['order'], $order_result['order_details']);
-
-                $this->sendOrderSuccessSms($user, $order_result['order']);
+                $order_result = $this->orderStore($user, $total_price, $totalProduct, 'SasaPay', $transaction_id, 1, $shipping, $shipping_fee, $coupon_price, 0,$billing_address_id, $shipping_address_id);
 
                 $frontend_success_url = Session::get('frontend_success_url');
-                $request_from = Session::get('request_from');
+                $order = $order_result['order'];
+                $success_url = $frontend_success_url;
+                $success_url = $success_url. "/" . $order->order_id;
+                return redirect($success_url);
 
-                if($request_from == 'react_web'){
-                    $order = $order_result['order'];
-                    $success_url = $frontend_success_url;
-                    $success_url = $success_url. "/" . $order->order_id;
-                    return redirect($success_url);
-                }else{
-                    return redirect()->route('user.checkout.order-success-url-for-mobile-app');
-                }
+        }else{
+            return redirect(Session::get('frontend_faild_url'));
 
-            }
         }
 
     }
@@ -1211,7 +1169,7 @@ class PaymentController extends Controller
                 }
             }
 
-            $product = Product::select('id','price','offer_price','weight')->find($cartProduct->product_id);
+            $product = Product::select('id','price','offer_price','weight', 'name')->find($cartProduct->product_id);
             $order_details.='Product: '.$product->name. '<br>';
             $price = $product->offer_price ? $product->offer_price : $product->price;
             $price = $price + $variantPrice;
