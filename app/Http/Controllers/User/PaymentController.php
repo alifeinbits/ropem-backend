@@ -732,7 +732,7 @@ class PaymentController extends Controller
 
         $amount_real_currency = $total_price;
         $sasapayPayment = SasapayPayment::first();
-        $price = $amount_real_currency * $sasapayPayment->currency->currency_rate;
+        $price = $amount_real_currency;
         $price = round($price,2);
 
         $client_id = $sasapayPayment->client_id;
@@ -779,6 +779,95 @@ class PaymentController extends Controller
     }
 
     public function instamojoResponse(Request $request){
+        $input = $request->all();
+
+        $instamojoPayment = InstamojoPayment::first();
+        $environment = $instamojoPayment->account_mode;
+        $api_key = $instamojoPayment->api_key;
+        $auth_token = $instamojoPayment->auth_token;
+
+        if($environment == 'Sandbox') {
+            $url = 'https://test.instamojo.com/api/1.1/';
+        } else {
+            $url = 'https://www.instamojo.com/api/1.1/';
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url.'payments/'.$request->get('payment_id'));
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,
+            array("X-Api-Key:$api_key",
+                "X-Auth-Token:$auth_token"));
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            $frontend_faild_url = Session::get('frontend_faild_url');
+            $request_from = Session::get('request_from');
+
+            if($request_from == 'react_web'){
+                return redirect($frontend_faild_url);
+            }else{
+                return redirect()->route('user.checkout.order-fail-url-for-mobile-app');
+            }
+        } else {
+            $data = json_decode($response);
+        }
+
+        if($data->success == true) {
+            if($data->payment->status == 'Credit') {
+                $user = Session::get('user');
+                $coupon = Session::get('coupon');
+                $shipping_address_id = Session::get('shipping_address_id');
+                $billing_address_id = Session::get('billing_address_id');
+                $shipping_method_id = Session::get('shipping_method_id');
+                $payment_id = $request->get('payment_id');
+
+                $total = $this->calculateCartTotal($user, $coupon, $shipping_method_id);
+
+                $total_price = $total['total_price'];
+                $coupon_price = $total['coupon_price'];
+                $shipping_fee = $total['shipping_fee'];
+                $productWeight = $total['productWeight'];
+                $shipping = $total['shipping'];
+
+                $totalProduct = ShoppingCart::with('variants')->where('user_id', $user->id)->sum('qty');
+
+                $setting = Setting::first();
+
+                $amount_real_currency = $total_price;
+                $amount_usd = round($total_price / $setting->currency->currency_rate,2);
+                $currency_rate = $setting->currency->currency_rate;
+                $currency_icon = $setting->currency->currency_icon;
+                $currency_name = $setting->currency->currency_name;
+
+                $transaction_id = $payment_id;
+                $order_result = $this->orderStore($user, $total_price, $totalProduct, 'Instamojo', $transaction_id, 1, $shipping, $shipping_fee, $coupon_price, 0,$billing_address_id, $shipping_address_id);
+
+                $this->sendOrderSuccessMail($user, $total_price, 'Instamojo', 1, $order_result['order'], $order_result['order_details']);
+
+                $this->sendOrderSuccessSms($user, $order_result['order']);
+
+                $frontend_success_url = Session::get('frontend_success_url');
+                $request_from = Session::get('request_from');
+
+                if($request_from == 'react_web'){
+                    $order = $order_result['order'];
+                    $success_url = $frontend_success_url;
+                    $success_url = $success_url. "/" . $order->order_id;
+                    return redirect($success_url);
+                }else{
+                    return redirect()->route('user.checkout.order-success-url-for-mobile-app');
+                }
+
+            }
+        }
+
+    }
+    public function sasapayResponse(Request $request){
         $input = $request->all();
 
         $instamojoPayment = InstamojoPayment::first();
