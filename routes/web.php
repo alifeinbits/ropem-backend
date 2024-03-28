@@ -159,6 +159,9 @@ Route::group(['as'=> 'user.', 'prefix' => 'user'],function (){
         Route::get('/pay-with-instamojo', [PaymentController::class, 'payWithInstamojo'])->name('pay-with-instamojo');
         Route::get('/instamojo-response', [PaymentController::class, 'instamojoResponse'])->name('instamojo-response');
 
+        Route::get('/pay-with-sasapay', [PaymentController::class, 'payWithSasapay'])->name('pay-with-sasapay');
+        Route::get('/sasapay-response', [PaymentController::class, 'sasapayResponse'])->name('sasapay-response');
+
 
         Route::get('/paystack-web-view', [PaymentController::class, 'paystackWebView'])->name('paystack-web-view');
         Route::post('/pay-with-paystack', [PaymentController::class, 'payWithPayStack'])->name('pay-with-paystack');

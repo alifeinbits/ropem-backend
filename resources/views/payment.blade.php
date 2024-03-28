@@ -116,6 +116,10 @@
                                     <button class="nav-link common_btn" id="v-instamojo-payment-tab" data-bs-toggle="pill" data-bs-target="#v-instamojo-payment" type="button" role="tab" aria-controls="v-instamojo-payment" aria-selected="false">{{__('Instamojo')}}</button>
                                 @endif
 
+                                @if ($sasapayPayment->status == 1)
+                                    <button class="nav-link common_btn" id="v-sasapay-payment-tab" data-bs-toggle="pill" data-bs-target="#v-sasapay-payment" type="button" role="tab" aria-controls="v-sasapay-payment" aria-selected="false">{{__('SasaPay')}}</button>
+                                @endif
+
                                 @if ($bankPayment->status == 1)
                                 <button class="nav-link common_btn" id="v-bank-payment-tab" data-bs-toggle="pill" data-bs-target="#v-bank-payment" type="button" role="tab" aria-controls="v-bank-payment" aria-selected="false">{{__('Bank')}}</button>
                                 @endif
@@ -210,6 +214,10 @@
 
                             <div class="tab-pane fade" id="v-instamojo-payment" role="tabpanel" aria-labelledby="v-instamojo-payment-tab">
                                 <a href="{{ route('user.checkout.pay-with-instamojo') }}" class="common_btn mt-4">{{__('Payment with Instamojo')}}</a>
+                            </div>
+
+                            <div class="tab-pane fade" id="v-sasapay-payment" role="tabpanel" aria-labelledby="v-sasapay-payment-tab">
+                                <a href="{{ route('user.checkout.pay-with-sasapay') }}" class="common_btn mt-4">{{__('Payment with SasaPay')}}</a>
                             </div>
 
                             <div class="tab-pane fade" id="v-bank-payment" role="tabpanel" aria-labelledby="v-bank-payment-tab">

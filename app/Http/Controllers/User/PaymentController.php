@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\SasapayPayment;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Models\BreadcrumbImage;
@@ -698,6 +699,85 @@ class PaymentController extends Controller
         return redirect($response->payment_request->longurl);
     }
 
+    public function payWithSasapay(Request $request){
+        $environment = 'Live';
+        $rules = [
+            'request_from'=>'required',
+            'shipping_address_id'=>'required',
+            'billing_address_id'=>'required',
+            'shipping_method_id'=>'required',
+        ];
+        $this->validate($request, $rules);
+
+        $user = Auth::guard('api')->user();
+
+        Session::put('frontend_success_url', $request->frontend_success_url);
+        Session::put('frontend_faild_url', $request->frontend_faild_url);
+        Session::put('request_from', $request->request_from);
+        Session::put('shipping_address_id', $request->shipping_address_id);
+        Session::put('billing_address_id', $request->billing_address_id);
+        Session::put('shipping_method_id', $request->shipping_method_id);
+        Session::put('coupon', $request->coupon);
+        Session::put('user', $user);
+
+        $total = $this->calculateCartTotal($user, $request->coupon, $request->shipping_method_id);
+
+        $total_price = $total['total_price'];
+        $coupon_price = $total['coupon_price'];
+        $shipping_fee = $total['shipping_fee'];
+        $productWeight = $total['productWeight'];
+        $shipping = $total['shipping'];
+        $order_details = $total['order_details'];
+
+
+        $amount_real_currency = $total_price;
+        $sasapayPayment = SasapayPayment::first();
+        $price = $amount_real_currency * $sasapayPayment->currency->currency_rate;
+        $price = round($price,2);
+
+        $client_id = $sasapayPayment->client_id;
+        $client_secret = $sasapayPayment->client_secret;
+        $access_token  = $this->sasapayGetToken($client_id, $client_secret);
+
+
+        if($environment == 'Sandbox') {
+            $url = 'https://sandbox.sasapay.app/api/v1/payments/';
+        } else {
+            $url = 'https://api.sasapay.app/api/v1/payments/';
+        }
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url.'card-payments/');
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,
+            array("Content-Type:application/json",
+                "Authorization: Bearer $access_token"));
+        $payload = Array(
+            'MerchantCode' => $sasapayPayment->merchant_code,
+            'amount' => $price,
+            'Reference' => uniqid(),
+            'Currency' => 'KES',
+            'SasaPayWalletEnabled' => false,
+            'Description' => 'Payment for Phone '. $order_details,
+            'AirtelEnabled' => false,
+            'MpesaEnabled' => true,
+            'CardEnabled' => true,
+            'FailureUrl' => route('user.checkout.sasapay-response'),
+            'SuccessUrl' => route('user.checkout.sasapay-response'),
+            'CallbackUrl' => $sasapayPayment->callback_url,
+            'PayerEmail' => Auth::user()->email,
+        );
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $response = json_decode($response);
+        return redirect($response->CheckoutUrl);
+    }
+
     public function instamojoResponse(Request $request){
         $input = $request->all();
 
@@ -1023,6 +1103,7 @@ class PaymentController extends Controller
         $total_price = 0;
         $coupon_price = 0;
         $shipping_fee = 0;
+        $order_details = '';
         $productWeight = 0;
 
         $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
@@ -1042,6 +1123,7 @@ class PaymentController extends Controller
             }
 
             $product = Product::select('id','price','offer_price','weight')->find($cartProduct->product_id);
+            $order_details.='Product: '.$product->name. '<br>';
             $price = $product->offer_price ? $product->offer_price : $product->price;
             $price = $price + $variantPrice;
             $weight = $product->weight;
@@ -1108,6 +1190,7 @@ class PaymentController extends Controller
         $arr['shipping_fee'] = $shipping_fee;
         $arr['productWeight'] = $productWeight;
         $arr['shipping'] = $shipping;
+        $arr['order_details'] = $order_details;
 
         return $arr;
     }
@@ -1474,6 +1557,49 @@ class PaymentController extends Controller
             return redirect()->route('user.checkout.order-fail-url-for-mobile-app');
         }
     }
+
+
+    private function sasapayGetToken($clientId, $clientSecret)
+    {
+        $url = 'https://api.sasapay.app/api/v1/auth/token/?grant_type=client_credentials';
+        $requestBody = array(
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+        );
+        $headers = array(
+            'Authorization: Basic ' . base64_encode($requestBody['client_id'] . ':' . $requestBody['client_secret']),
+        );
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => $headers
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        // Decode the JSON response
+        $decodedResponse = json_decode($response, true);
+
+        // Check if the response status is true and access_token is present
+        if ($decodedResponse && isset($decodedResponse['status']) && $decodedResponse['status'] === true && isset($decodedResponse['access_token'])) {
+            return $decodedResponse['access_token'];
+        } else {
+            // Handle the case where the response is not as expected
+            return null;
+        }
+    }
+
+
+
 }
 
 
