@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\Country;
 use App\Models\CountryState;
 use App\Models\City;
 use Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AddressCotroller extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+//        $this->middleware('auth:api');
     }
 
     public function index(){
@@ -52,25 +54,50 @@ class AddressCotroller extends Controller
             'type.required' => trans('user_validation.Address type is required'),
         ];
         $this->validate($request, $rules,$customMessages);
+        $user = User::where('phone', $request->phone)->first();
+        if($user){
+            $address = Address::with('country','countryState','city')->where(['user_id' => $user->id])->first();
+            if ($address){
+                $address->name = $request->name;
+                $address->session_id = $request->sessionId;
+                $address->email = $request->email;
+                $address->phone = $request->phone;
+                $address->address = $request->address;
+                $address->country_id = $request->country;
+                $address->state_id = $request->state;
+                $address->city_id = $request->city;
+                $address->type = $request->type;
+                $address->default_billing = 1;
+                $address->default_shipping = 1;
+                $address->save();
+            }
 
-        $user = Auth::guard('api')->user();
-        $isExist = Address::where(['user_id' => $user->id])->count();
-        $address = new Address();
-        $address->user_id = $user->id;
-        $address->name = $request->name;
-        $address->email = $request->email;
-        $address->phone = $request->phone;
-        $address->address = $request->address;
-        $address->country_id = $request->country;
-        $address->state_id = $request->state;
-        $address->city_id = $request->city;
-        $address->city_id = $request->city;
-        $address->type = $request->type;
-        if($isExist == 0){
+        }else {
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone ? $request->phone : '';
+            $user->agree_policy = 1;
+            $user->password = Hash::make($request->email);
+            $user->verify_token = random_int(100000, 999999);;
+            $user->save();
+
+            $address = new Address();
+            $address->user_id = $user->id;
+            $address->session_id = $request->sessionId;
+            $address->name = $request->name;
+            $address->email = $request->email;
+            $address->phone = $request->phone;
+            $address->address = $request->address;
+            $address->country_id = $request->country;
+            $address->state_id = $request->state;
+            $address->city_id = $request->city;
+            $address->type = $request->type;
             $address->default_billing = 1;
             $address->default_shipping = 1;
-        }
-        $address->save();
+
+            $address->save()       ;
+            }
 
         $notification = trans('user_validation.Create Successfully');
         return response()->json(['notification' => $notification]);

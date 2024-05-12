@@ -41,7 +41,7 @@ class UserProfileController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+//        $this->middleware('auth:api');
     }
 
     public function remove_account(){

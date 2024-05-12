@@ -32,19 +32,21 @@ class CheckoutController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+//        $this->middleware('auth:api');
     }
 
     public function checkout(Request $request){
-        $user = Auth::guard('api')->user();
-        $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
+//        $user = Auth::guard('api')->user();
+        $sessionId = $request->session_id;
+
+        $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('session_id', $sessionId)->select('id','product_id','qty')->get();
 
         if($cartProducts->count() == 0){
             $notification = trans('user_validation.Your shopping cart is empty');
             return response()->json(['message' => $notification],403);
         }
 
-        $addresses = Address::with('country','countryState','city')->where(['user_id' => $user->id])->get();
+        $addresses = Address::with('country','countryState','city')->where(['session_id' => $sessionId])->get();
         $shippings = Shipping::all();
 
         $couponOffer = '';

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\SasapayPayment;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\BreadcrumbImage;
 use Auth;
@@ -61,7 +62,7 @@ class PaymentController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except('molliePaymentSuccess','instamojoResponse','sslcommerz_success','sslcommerz_failed','myfatoorah_webview_callback');
+        $this->middleware('auth:api')->except('molliePaymentSuccess','instamojoResponse','sslcommerz_success','sslcommerz_failed','myfatoorah_webview_callback','payWithSasapay','sasapayResponse');
     }
 
 
@@ -709,7 +710,11 @@ class PaymentController extends Controller
         ];
         $this->validate($request, $rules);
 
-        $user = Auth::guard('api')->user();
+        $address = Address::with('country','countryState','city')->where(['id' => $request->shipping_address_id])->first();
+        $userId = $address->user_id;
+
+        $user = User::where('id',$userId)->first();
+
 
         session([
             'frontend_success_url' => $request->frontend_success_url,
@@ -722,7 +727,9 @@ class PaymentController extends Controller
             'user' => $user,
         ]);
 
-        $total = $this->calculateCartTotal($user, $request->coupon, $request->shipping_method_id);
+
+
+        $total = $this->calculateCartTotal($address, $request->coupon, $request->shipping_method_id);
 
         $total_price = $total['total_price'];
         $coupon_price = $total['coupon_price'];
@@ -771,7 +778,7 @@ class PaymentController extends Controller
             'FailureUrl' => route('user.checkout.sasapay-response'),
             'SuccessUrl' => route('user.checkout.sasapay-response'),
             'CallbackUrl' => route('user.checkout.sasapay-response'),
-            'PayerEmail' => Auth::user()->email,
+            'PayerEmail' => $user->email,
         ];
         error_log(print_r($payload, true));
         curl_setopt($ch, CURLOPT_POST, true);
@@ -1153,7 +1160,7 @@ class PaymentController extends Controller
         $order_details = '';
         $productWeight = 0;
 
-        $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
+        $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('session_id', $user->session_id)->select('id','product_id','qty')->get();
         if($cartProducts->count() == 0){
             $notification = trans('user_validation.Your shopping cart is empty');
             return response()->json(['message' => $notification],403);

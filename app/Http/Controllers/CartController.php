@@ -21,25 +21,51 @@ class CartController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+//        $this->middleware('auth:api');
+//        $this->middleware('auth:api')->except('addToCart');
+
     }
 
 
-    public function cart(){
-        $user = Auth::guard('api')->user();
-        $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
+    public function cart(Request $request){
+        // Retrieve the session ID from the request
+        $sessionId = $request->session_id;
 
-        return response()->json(['cartProducts' => $cartProducts],200);
+        // Validate session ID
+        if(!$sessionId) {
+            $notification = trans('user_validation.Session ID is missing');
+            return response()->json(['message' => $notification], 403);
+        }
+
+        // Retrieve cart products based on session ID
+        $cartProducts = ShoppingCart::with('product','variants.variantItem')
+            ->where('session_id', $sessionId)
+            ->select('id','product_id','qty')
+            ->get();
+
+        return response()->json(['cartProducts' => $cartProducts], 200);
     }
+
 
     public function addToCart(Request $request){
 
-        $user = Auth::guard('api')->user();
+        // Retrieve the session ID from the request
+        $sessionId = $request->session_id;
+        var_dump($sessionId);
+
+        // Validate session ID
+        if(!$sessionId) {
+            $notification = trans('user_validation.Session ID is missing');
+            return response()->json(['message' => $notification], 403);
+        }
+
+        // Check if the session ID is associated with an existing user or guest
+        // You may need to implement logic here to map session IDs to user accounts if applicable
 
         $item_exist = false;
         $variant_exist = false;
         $variant_available = false;
-        $exist_product = ShoppingCart::where(['user_id' => $user->id, 'product_id' => $request->product_id])->first();
+        $exist_product = ShoppingCart::where(['session_id' => $sessionId, 'product_id' => $request->product_id])->first();
 
         $variant_arr = array();
 
@@ -49,7 +75,7 @@ class CartController extends Controller
                 foreach($request->variants as $index => $varr){
                     if($request->items[$index] != '-1' && $request->variants[$index] != '-1'){
 
-                        $exist_variant = ShoppingCartVariant::where(['user_id' => $user->id, 'product_id' => $request->product_id , 'variant_id' => $varr, 'variant_item_id' => $request->items[$index]])->count();
+                        $exist_variant = ShoppingCartVariant::where(['session_id' => $sessionId, 'product_id' => $request->product_id , 'variant_id' => $varr, 'variant_item_id' => $request->items[$index]])->count();
 
                         $variant_arr[] = $exist_variant;
                         $variant_available = true;
@@ -88,7 +114,8 @@ class CartController extends Controller
         }
 
         $item = new ShoppingCart();
-        $item->user_id = $user->id;
+        // Update user_id to session_id
+        $item->session_id = $sessionId;
         $item->product_id = $request->product_id;
         $item->qty = $request->quantity;
         $item->coupon_name = '';
@@ -100,7 +127,8 @@ class CartController extends Controller
             foreach($request->variants as $index => $varr){
                 if($request->items[$index] != '-1' && $request->variants[$index] != '-1'){
                     $variant = new ShoppingCartVariant();
-                    $variant->user_id = $user->id;
+                    // Update user_id to session_id
+                    $variant->session_id = $sessionId;
                     $variant->product_id = $request->product_id;
                     $variant->shopping_cart_id = $item->id;
                     $variant->variant_id = $varr;
